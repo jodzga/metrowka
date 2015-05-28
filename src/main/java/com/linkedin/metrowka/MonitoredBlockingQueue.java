@@ -1,25 +1,29 @@
-package com.linkedin.parseq.internal.metrics;
+package com.linkedin.metrowka;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import org.HdrHistogram.Histogram;
-
 public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
 
-  private final LongGauge _gauge = new LongGauge(1, Integer.MAX_VALUE, 3);
-  private final Rate _enqueueRate = new Rate(1, Long.MAX_VALUE, 3);
-  private final Rate _dequeueRate = new Rate(1, Long.MAX_VALUE, 3);
+  private final Gauge _queueSize;
+  private final HarvestableQueueSize _harvestableQueueSize;
+  private final Rate _enqueueRate;
+  private final Rate _dequeueRate;
+  private final BlockingQueue<T> _delegate;
 
-  private final BlockingQueue<T> _delegate =
-      new LinkedBlockingQueue<>();
+  public MonitoredBlockingQueue(final String name, final BlockingQueue<T> delegate) {
+    _delegate = delegate;
+    _queueSize = new Gauge(name, 1, Integer.MAX_VALUE, 3);
+    _harvestableQueueSize = new HarvestableQueueSize(name);
+    _enqueueRate = new Rate(name, 1, Long.MAX_VALUE, 3);
+    _dequeueRate = new Rate(name, 1, Long.MAX_VALUE, 3);
+  }
 
   public void forEach(Consumer<? super T> action) {
     _delegate.forEach(action);
@@ -28,7 +32,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
   public boolean add(T e) {
     boolean r = _delegate.add(e);
     long currentNano = System.nanoTime();
-    _gauge.update(_delegate.size(), currentNano);
+    _queueSize.update(_delegate.size(), currentNano);
     _enqueueRate.record(1, currentNano);
     return r;
   }
@@ -44,7 +48,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
   public T remove() {
     T r = _delegate.remove();
     long currentNano = System.nanoTime();
-    _gauge.update(_delegate.size(), currentNano);
+    _queueSize.update(_delegate.size(), currentNano);
     _dequeueRate.record(1, currentNano);
     return r;
   }
@@ -53,7 +57,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
     boolean r = _delegate.offer(e);
     if (r) {
       long currentNano = System.nanoTime();
-      _gauge.update(_delegate.size(), currentNano);
+      _queueSize.update(_delegate.size(), currentNano);
       _enqueueRate.record(1, currentNano);
     }
     return r;
@@ -63,7 +67,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
     T r = _delegate.poll();
     if (r != null) {
       long currentNano = System.nanoTime();
-      _gauge.update(_delegate.size(), currentNano);
+      _queueSize.update(_delegate.size(), currentNano);
       _dequeueRate.record(1, currentNano);
     }
     return r;
@@ -84,7 +88,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
   public void put(T e) throws InterruptedException {
     _delegate.put(e);
     long currentNano = System.nanoTime();
-    _gauge.update(_delegate.size(), currentNano);
+    _queueSize.update(_delegate.size(), currentNano);
     _enqueueRate.record(1, currentNano);
   }
 
@@ -96,7 +100,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
     boolean r = _delegate.offer(e, timeout, unit);
     if (r) {
       long currentNano = System.nanoTime();
-      _gauge.update(_delegate.size(), currentNano);
+      _queueSize.update(_delegate.size(), currentNano);
       _enqueueRate.record(1, currentNano);
     }
     return r;
@@ -110,7 +114,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
   public T take() throws InterruptedException {
     T r = _delegate.take();
     long currentNano = System.nanoTime();
-    _gauge.update(_delegate.size(), currentNano);
+    _queueSize.update(_delegate.size(), currentNano);
     _dequeueRate.record(1, currentNano);
     return r;
   }
@@ -119,7 +123,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
     T r = _delegate.poll(timeout, unit);
     if (r != null) {
       long currentNano = System.nanoTime();
-      _gauge.update(_delegate.size(), currentNano);
+      _queueSize.update(_delegate.size(), currentNano);
       _dequeueRate.record(1, currentNano);
     }
     return r;
@@ -133,7 +137,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
     boolean r = _delegate.remove(o);
     if (r) {
       long currentNano = System.nanoTime();
-      _gauge.update(_delegate.size(), currentNano);
+      _queueSize.update(_delegate.size(), currentNano);
       _dequeueRate.record(1, currentNano);
     }
     return r;
@@ -147,7 +151,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
     int r = _delegate.drainTo(c);
     if (r > 0) {
       long currentNano = System.nanoTime();
-      _gauge.update(_delegate.size(), currentNano);
+      _queueSize.update(_delegate.size(), currentNano);
       _dequeueRate.record(r, currentNano);
     }
     return r;
@@ -157,7 +161,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
     int r = _delegate.drainTo(c, maxElements);
     if (r > 0) {
       long currentNano = System.nanoTime();
-      _gauge.update(_delegate.size(), currentNano);
+      _queueSize.update(_delegate.size(), currentNano);
       _dequeueRate.record(r, currentNano);
     }
     return r;
@@ -175,7 +179,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
       int size = _delegate.size();
       int delta = size - beforeSize;
       if (delta > 0) {
-        _gauge.update(size, currentNano);
+        _queueSize.update(size, currentNano);
         _enqueueRate.record(delta, currentNano);
       }
     }
@@ -190,7 +194,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
       int size = _delegate.size();
       int delta = beforeSize - size;
       if (delta > 0) {
-        _gauge.update(size, currentNano);
+        _queueSize.update(size, currentNano);
         _dequeueRate.record(delta, currentNano);
       }
     }
@@ -205,7 +209,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
       int size = _delegate.size();
       int delta = beforeSize - size;
       if (delta > 0) {
-        _gauge.update(size, currentNano);
+        _queueSize.update(size, currentNano);
         _dequeueRate.record(delta, currentNano);
       }
     }
@@ -220,7 +224,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
       int size = _delegate.size();
       int delta = beforeSize - size;
       if (delta > 0) {
-        _gauge.update(size, currentNano);
+        _queueSize.update(size, currentNano);
         _dequeueRate.record(delta, currentNano);
       }
     }
@@ -231,7 +235,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
     int beforeSize = _delegate.size();
     _delegate.clear();
     long currentNano = System.nanoTime();
-    _gauge.update(0, currentNano);
+    _queueSize.update(0, currentNano);
     _dequeueRate.record(beforeSize, currentNano);
   }
 
@@ -255,17 +259,29 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
     return _delegate.parallelStream();
   }
 
-  public void harvestSizeHistogram(Consumer<Histogram> consumer) {
-    _gauge.update(_delegate.size(), System.nanoTime());
-    _gauge.harvest(consumer);
+  private class HarvestableQueueSize extends Harvestable {
+
+    HarvestableQueueSize(final String name) {
+      super(InstrumentType.gauge, name);
+    }
+
+    @Override
+    public void harvest(Harvester harvester) {
+      _queueSize.update(_delegate.size(), System.nanoTime());
+      _queueSize.harvest(harvester);
+    }
   }
 
-  public void harvestEnqueueRateHistogram(Consumer<Histogram> consumer) {
-    _enqueueRate.harvest(consumer);
+  public Harvestable queueSize() {
+    return _harvestableQueueSize;
   }
 
-  public void harvestDequeueRateHistogram(Consumer<Histogram> consumer) {
-    _dequeueRate.harvest(consumer);
+  public Harvestable enqueueRate() {
+    return _enqueueRate;
+  }
+
+  public Harvestable dequeueRate() {
+    return _dequeueRate;
   }
 
 }
