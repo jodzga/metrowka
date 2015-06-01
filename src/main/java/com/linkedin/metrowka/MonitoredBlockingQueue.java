@@ -13,16 +13,16 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
 
   private final Gauge _queueSize;
   private final HarvestableQueueSize _harvestableQueueSize;
-  private final Rate _enqueueRate;
-  private final Rate _dequeueRate;
+  private final Throughput _enqueueRate;
+  private final Throughput _dequeueRate;
   private final BlockingQueue<T> _delegate;
 
   public MonitoredBlockingQueue(final String name, final BlockingQueue<T> delegate) {
     _delegate = delegate;
     _queueSize = new Gauge(name, 1, Integer.MAX_VALUE, 3);
     _harvestableQueueSize = new HarvestableQueueSize(name);
-    _enqueueRate = new Rate(name, 1, Long.MAX_VALUE, 3);
-    _dequeueRate = new Rate(name, 1, Long.MAX_VALUE, 3);
+    _enqueueRate = new Throughput(name, 1, Long.MAX_VALUE, 3);
+    _dequeueRate = new Throughput(name, 1, Long.MAX_VALUE, 3);
   }
 
   public void forEach(Consumer<? super T> action) {

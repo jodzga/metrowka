@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.HdrHistogram.Histogram;
 import org.HdrHistogram.Recorder;
 
-public class Rate extends Harvestable {
+public class Throughput extends Harvestable {
 
   private final Recorder _recorder;
   private final AtomicLong _lastNano = new AtomicLong(0);
@@ -14,7 +14,7 @@ public class Rate extends Harvestable {
    // Specifies smallest registered rate, equivalent to 1/2^48ns that is 1/3.4day.
   public static final long MAX_INTERVAL_BETWEEN_EVENTS_IN_NS = 1L << 48;
 
-  public Rate(final String name, final long lowestDiscernibleValue, final long highestTrackableValue, final int numberOfSignificantValueDigits) {
+  public Throughput(final String name, final long lowestDiscernibleValue, final long highestTrackableValue, final int numberOfSignificantValueDigits) {
     super(InstrumentType.rate, name);
     _recorder = new Recorder(lowestDiscernibleValue, highestTrackableValue, numberOfSignificantValueDigits);
   }
