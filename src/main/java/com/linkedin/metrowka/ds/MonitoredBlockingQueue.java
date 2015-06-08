@@ -1,4 +1,4 @@
-package com.linkedin.metrowka;
+package com.linkedin.metrowka.ds;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -9,20 +9,26 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.linkedin.metrowka.Gauge;
+import com.linkedin.metrowka.Harvestable;
+import com.linkedin.metrowka.Harvester;
+import com.linkedin.metrowka.InstrumentType;
+import com.linkedin.metrowka.Rate;
+
 public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
 
   private final Gauge _queueSize;
   private final HarvestableQueueSize _harvestableQueueSize;
-  private final Throughput _enqueueRate;
-  private final Throughput _dequeueRate;
+  private final Rate _enqueueRate;
+  private final Rate _dequeueRate;
   private final BlockingQueue<T> _delegate;
 
   public MonitoredBlockingQueue(final String name, final BlockingQueue<T> delegate) {
     _delegate = delegate;
     _queueSize = new Gauge(name, 1, Integer.MAX_VALUE, 3);
     _harvestableQueueSize = new HarvestableQueueSize(name);
-    _enqueueRate = new Throughput(name, 1, Long.MAX_VALUE, 3);
-    _dequeueRate = new Throughput(name, 1, Long.MAX_VALUE, 3);
+    _enqueueRate = new Rate(name, 1, Long.MAX_VALUE, 3);
+    _dequeueRate = new Rate(name, 1, Long.MAX_VALUE, 3);
   }
 
   public void forEach(Consumer<? super T> action) {

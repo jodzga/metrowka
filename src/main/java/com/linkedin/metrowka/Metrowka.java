@@ -13,9 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Reaper {
+public class Metrowka {
 
-  private static final Logger _logger = LoggerFactory.getLogger(Reaper.class);
+  private static final Logger _logger = LoggerFactory.getLogger(Metrowka.class);
 
   private static final ThreadFactory _threadFactory = new ThreadFactory() {
 
@@ -34,7 +34,7 @@ public class Reaper {
       Executors.newSingleThreadScheduledExecutor(_threadFactory);
   private final ConcurrentHashMap<Harvestable, Harvester> _harvesters = new ConcurrentHashMap<>();
 
-  public Reaper(long harvestPeriodMs) {
+  public Metrowka(long harvestPeriodMs) {
     _harvestPeriodMs = harvestPeriodMs;
   }
 

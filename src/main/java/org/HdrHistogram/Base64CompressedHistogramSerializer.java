@@ -2,13 +2,12 @@ package org.HdrHistogram;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.HdrHistogram.Histogram;
-
-import com.linkedin.metrowka.HistogramSerializer;
+import com.linkedin.metrowka.logging.HistogramSerializer;
 
 
 public class Base64CompressedHistogramSerializer implements HistogramSerializer {
@@ -28,6 +27,21 @@ public class Base64CompressedHistogramSerializer implements HistogramSerializer 
     targetBuffer.putLong(compressedLength + 8, histogram.getEndTimeStamp());
     byte[] compressedArray = Arrays.copyOf(targetBuffer.array(), compressedLength + 16);
     return DatatypeConverter.printBase64Binary(compressedArray);
+  }
+
+  @Override
+  public Histogram deserialize(String serialized) {
+    try {
+      byte[] rawBytes = DatatypeConverter.parseBase64Binary(serialized);
+      final ByteBuffer buffer = ByteBuffer.wrap(rawBytes, 0, rawBytes.length - 16);
+      Histogram histogram = (Histogram) EncodableHistogram.decodeFromCompressedByteBuffer(buffer, 0);
+      final ByteBuffer timestamps = ByteBuffer.wrap(rawBytes, 0, rawBytes.length);
+      histogram.setStartTimeStamp(timestamps.getLong(rawBytes.length - 16));
+      histogram.setEndTimeStamp(timestamps.getLong(rawBytes.length - 16 + 8));
+      return histogram;
+    } catch (DataFormatException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }
