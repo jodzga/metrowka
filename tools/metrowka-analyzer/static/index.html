@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Metrowka</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/jquery-ui.min.css" rel="stylesheet">
+    <link href="css/rickshaw.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+  
+  <div class="container">
+  
+    <h2>Metrics</h2>
+    
+    <p>
+       Select one of the metrics retrieved from the log file.
+    </p>
+  
+    <div class="row"><div class="col-md-12"><p class="text-center"><select id="histogramNames"></select></p></div></div>
+    
+    <hr>
+
+    <h2>Summary statistics for entire sample</h2>
+
+    <div class="row">
+        <div class="col-md-3"><span class="label label-primary">Min:</span></div>
+        <div class="col-md-3"><span class="label label-primary">Max:</span></div>
+        <div class="col-md-3"><span class="label label-primary">Avg:</span></div>
+        <div class="col-md-3"><span class="label label-primary">StdDeviation:</span></div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"><span id="minDistAll"></span></div>
+        <div class="col-md-3"><span id="maxDistAll"></span></div>
+        <div class="col-md-3"><span id="avgDistAll"></span></div>
+        <div class="col-md-3"><span id="stdDevDistAll"></span></div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"><span class="label label-primary">50 %ile:</span></div>
+        <div class="col-md-3"><span class="label label-primary">90 %ile:</span></div>
+        <div class="col-md-3"><span class="label label-primary">99 %ile:</span></div>
+        <div class="col-md-3"><span class="label label-primary">99.9 %ile:</span></div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"><span id="50pctDistAll"></span></div>
+        <div class="col-md-3"><span id="90pctDistAll"></span></div>
+        <div class="col-md-3"><span id="99pctDistAll"></span></div>
+        <div class="col-md-3"><span id="999pctDistAll"></span></div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"><span class="label label-primary">99.99 %ile:</span></div>
+        <div class="col-md-3"><span class="label label-primary">99.999 %ile:</span></div>
+        <div class="col-md-3"><span class="label label-primary">99.9999 %ile:</span></div>
+        <div class="col-md-3"><span class="label label-primary">99.99999 %ile:</span></div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"><span id="9999pctDistAll"></span></div>
+        <div class="col-md-3"><span id="99999pctDistAll"></span></div>
+        <div class="col-md-3"><span id="999999pctDistAll"></span></div>
+        <div class="col-md-3"><span id="9999999pctDistAll"></span></div>
+    </div>
+
+    <h2>Distribution over time</h2>
+    
+    <div class="row">
+        <div class="col-md-11"><div id="chartDistAll"></div></div>
+        <div class="col-md-1"><div id="legendDistAll"></div></div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-12"><div id="sliderDistAll"></div></div>
+    </div>
+
+    <h2>Time Range</h2>
+    
+    <p>
+       Log file contains the following start times of time intervals during which metric was aggregated.
+       Use slider to select start time of a time interval.
+    </p>
+    
+    <div class="row">
+        <div class="col-md-4"><span class="label label-primary">First time: </span></div>
+        <div class="col-md-4"><span class="label label-primary">Selected time: </span></div>
+        <div class="col-md-4"><span class="label label-primary">Last time: </span></div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4"><span id="firstTime"></span></div>
+        <div class="col-md-4"><span id="selectedTime"></span></div>
+        <div class="col-md-4"><span id="lastTime"></span></div>
+    </div>
+    
+    <hr>
+    
+    <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10"><div id="slider"></div></div>
+    <div class="col-md-1"></div>
+    </div>
+
+    <hr>
+    
+    <h2>Summary statistics for selected time</h2>
+
+    <div class="row">
+        <div class="col-md-3"><span class="label label-primary">Min:</span></div>
+        <div class="col-md-3"><span class="label label-primary">Max:</span></div>
+        <div class="col-md-3"><span class="label label-primary">Avg:</span></div>
+        <div class="col-md-3"><span class="label label-primary">StdDeviation:</span></div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"><span id="min0"></span></div>
+        <div class="col-md-3"><span id="max0"></span></div>
+        <div class="col-md-3"><span id="avg0"></span></div>
+        <div class="col-md-3"><span id="stdDev0"></span></div>
+    </div>
+    
+    <hr>
+    
+    <h2 id="title0"></h2>
+    
+    <div class="row">
+        <div class="col-md-12"><div id="chart0"></div></div>
+    </div>
+
+    <hr>
+
+    <h6>Annotations</h6>
+    
+    <div class="row">
+        <div class="col-md-12"><div id="timeline0"></div></div>
+    </div>
+    
+    <hr>
+
+    <div class="row">
+        <div class="col-md-12"><div id="slider0"></div></div>
+    </div>
+
+    <hr>
+
+    <h2 id="title1"></h2>
+    
+    <div class="row">
+        <div class="col-md-12"><div id="chart1"></div></div>
+    </div>
+
+    <hr>
+    
+  </div>
+    
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    
+    <script src="js/d3.v3.js"></script>
+    <script src="js/d3.layout.min.js"></script>
+    <script src="js/rickshaw.min.js"></script>    
+  </body>
+  
+  <script src="js/duration.js"></script>    
+  <script src="js/rickshaw-clickdetail.js"></script>    
+  <script src="js/draw-all.js"></script>
+  <script src="js/draw-distribution.js"></script>
+  <script src="js/draw-percentiles.js"></script>
+
+	<script>
+	
+	var histograms = [];
+
+	$('#histogramNames').change(function() {
+	  var selected = this.value;
+      var times = histograms[selected].times
+      var firstTimestamp = times[0].start;
+      var lastTimestamp = times[times.length - 1].start;
+      $("#firstTime").text(new Date(firstTimestamp).toString());
+      $("#lastTime").text(new Date(lastTimestamp).toString());
+      
+      $("#slider").slider({
+        min: 0,
+        max: times.length - 1,
+        change: function(event, ui) {
+          $("#selectedTime").text(new Date(times[ui.value].start).toString());
+          var hist = histograms[selected];
+          drawDistribution(selected, hist.times[ui.value].start, hist.type);
+          drawPercentiles(selected, hist.times[ui.value].start, hist.type);
+        },
+        slide: function( event, ui ) {
+          $("#selectedTime").text(new Date(times[ui.value].start).toString());
+        }
+      });
+      
+      $("#slider").slider("value", 0);
+      
+      $.getJSON("/data/allHistogramsData?name=" + selected)
+      .done(function(data) {
+        drawAll(data, selected, histograms[selected].type);
+      });
+      
+	});
+	
+	(function() {
+	  $.getJSON("/data/listOfHistograms")
+        .done(function(data) {
+          histograms = [];
+          $('#histogramNames').empty();
+          $.each(data.histograms, function(i,obj) {
+            histograms[obj.name] = obj;
+            $('#histogramNames').append(
+              $('<option></option>')
+                .val(obj.name)
+                .html(obj.name));
+          });
+          $('#histogramNames').change();
+        });
+	})();
+	</script>
+
+</html>

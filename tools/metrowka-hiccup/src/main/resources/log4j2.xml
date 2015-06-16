@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="log-path">logs</Property>
+    </Properties>
+    <Appenders>
+        <RollingFile name="main-log" fileName="${log-path}/main.log"
+                     filePattern="${log-path}/main-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <pattern>%d [%t] %p %c %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="metrowka-log" fileName="${log-path}/metrowka.log"
+                     filePattern="${log-path}/metrowka-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <pattern>%d [%t] %p %c %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="metrowka" level="info" additivity="false">
+            <appender-ref ref="metrowka-log" level="info"/>
+        </Logger>
+        <Root level="info" additivity="false">
+            <AppenderRef ref="main-log"/>
+        </Root>
+    </Loggers>
+</Configuration>

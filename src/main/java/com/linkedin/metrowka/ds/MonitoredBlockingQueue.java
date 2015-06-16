@@ -25,10 +25,10 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
 
   public MonitoredBlockingQueue(final String name, final BlockingQueue<T> delegate) {
     _delegate = delegate;
-    _queueSize = new Gauge(name, 1, Integer.MAX_VALUE, 3);
-    _harvestableQueueSize = new HarvestableQueueSize(name);
-    _enqueueRate = new Rate(name, 1, Long.MAX_VALUE, 3);
-    _dequeueRate = new Rate(name, 1, Long.MAX_VALUE, 3);
+    _queueSize = new Gauge(name + "-queueSize", 1, Integer.MAX_VALUE, 3);
+    _harvestableQueueSize = new HarvestableQueueSize(name + "-queueSize");
+    _enqueueRate = new Rate(name + "-enqueueRate", 1, Long.MAX_VALUE, 3);
+    _dequeueRate = new Rate(name + "-dequeueRate", 1, Long.MAX_VALUE, 3);
   }
 
   public void forEach(Consumer<? super T> action) {
