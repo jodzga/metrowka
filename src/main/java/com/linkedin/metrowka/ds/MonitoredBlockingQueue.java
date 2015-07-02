@@ -20,15 +20,29 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
   private final Gauge _queueSize;
   private final HarvestableQueueSize _harvestableQueueSize;
   private final Rate _enqueueRate;
-  private final Rate _dequeueRate;
   private final BlockingQueue<T> _delegate;
+  private final boolean _monitorEnabled;
+  private final boolean _monitorSize;
+  private final boolean _monitorEnqueueRate;
 
-  public MonitoredBlockingQueue(final String name, final BlockingQueue<T> delegate) {
+  public MonitoredBlockingQueue(final String name, final BlockingQueue<T> delegate,
+      boolean monitorSize, boolean monitorEnqueueRate) {
     _delegate = delegate;
-    _queueSize = new Gauge(name + "-queueSize", 1, Integer.MAX_VALUE, 3);
-    _harvestableQueueSize = new HarvestableQueueSize(name + "-queueSize");
-    _enqueueRate = new Rate(name + "-enqueueRate", 1, Long.MAX_VALUE, 3);
-    _dequeueRate = new Rate(name + "-dequeueRate", 1, Long.MAX_VALUE, 3);
+    _monitorSize = monitorSize;
+    _monitorEnqueueRate = monitorEnqueueRate;
+    _monitorEnabled = _monitorSize || _monitorEnqueueRate;
+    if (_monitorSize) {
+      _queueSize = new Gauge(name + "-queueSize", 1, Integer.MAX_VALUE, 3);
+      _harvestableQueueSize = new HarvestableQueueSize(name + "-queueSize");
+    } else {
+      _queueSize = null;
+      _harvestableQueueSize = null;
+    }
+    if (_monitorEnqueueRate) {
+      _enqueueRate = new Rate(name + "-enqueueRate", 1, Long.MAX_VALUE, 3);
+    } else {
+      _enqueueRate = null;
+    }
   }
 
   public void forEach(Consumer<? super T> action) {
@@ -37,9 +51,15 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
 
   public boolean add(T e) {
     boolean r = _delegate.add(e);
-    long currentNano = System.nanoTime();
-    _queueSize.update(_delegate.size(), currentNano);
-    _enqueueRate.record(1, currentNano);
+    if (_monitorEnabled) {
+      long currentNano = System.nanoTime();
+      if (_monitorSize && r) {
+        _queueSize.update(_delegate.size(), currentNano);
+      }
+      if (_monitorEnqueueRate) {
+        _enqueueRate.record(1, currentNano);
+      }
+    }
     return r;
   }
 
@@ -53,28 +73,32 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
 
   public T remove() {
     T r = _delegate.remove();
-    long currentNano = System.nanoTime();
-    _queueSize.update(_delegate.size(), currentNano);
-    _dequeueRate.record(1, currentNano);
+    if (_monitorSize) {
+      long currentNano = System.nanoTime();
+      _queueSize.update(_delegate.size(), currentNano);
+    }
     return r;
   }
 
   public boolean offer(T e) {
     boolean r = _delegate.offer(e);
-    if (r) {
+    if (_monitorEnabled && r) {
       long currentNano = System.nanoTime();
-      _queueSize.update(_delegate.size(), currentNano);
-      _enqueueRate.record(1, currentNano);
+      if (_monitorSize) {
+        _queueSize.update(_delegate.size(), currentNano);
+      }
+      if (_monitorEnqueueRate) {
+        _enqueueRate.record(1, currentNano);
+      }
     }
     return r;
   }
 
   public T poll() {
     T r = _delegate.poll();
-    if (r != null) {
+    if (_monitorSize && r != null) {
       long currentNano = System.nanoTime();
       _queueSize.update(_delegate.size(), currentNano);
-      _dequeueRate.record(1, currentNano);
     }
     return r;
   }
@@ -93,9 +117,15 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
 
   public void put(T e) throws InterruptedException {
     _delegate.put(e);
-    long currentNano = System.nanoTime();
-    _queueSize.update(_delegate.size(), currentNano);
-    _enqueueRate.record(1, currentNano);
+    if (_monitorEnabled) {
+      long currentNano = System.nanoTime();
+      if (_monitorSize) {
+        _queueSize.update(_delegate.size(), currentNano);
+      }
+      if (_monitorEnqueueRate) {
+        _enqueueRate.record(1, currentNano);
+      }
+    }
   }
 
   public Object[] toArray() {
@@ -104,10 +134,14 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
 
   public boolean offer(T e, long timeout, TimeUnit unit) throws InterruptedException {
     boolean r = _delegate.offer(e, timeout, unit);
-    if (r) {
+    if (_monitorEnabled && r) {
       long currentNano = System.nanoTime();
-      _queueSize.update(_delegate.size(), currentNano);
-      _enqueueRate.record(1, currentNano);
+      if (_monitorSize) {
+        _queueSize.update(_delegate.size(), currentNano);
+      }
+      if (_monitorEnqueueRate) {
+        _enqueueRate.record(1, currentNano);
+      }
     }
     return r;
   }
@@ -119,18 +153,18 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
 
   public T take() throws InterruptedException {
     T r = _delegate.take();
-    long currentNano = System.nanoTime();
-    _queueSize.update(_delegate.size(), currentNano);
-    _dequeueRate.record(1, currentNano);
+    if (_monitorSize) {
+      long currentNano = System.nanoTime();
+      _queueSize.update(_delegate.size(), currentNano);
+    }
     return r;
   }
 
   public T poll(long timeout, TimeUnit unit) throws InterruptedException {
     T r = _delegate.poll(timeout, unit);
-    if (r != null) {
+    if (_monitorSize && r != null) {
       long currentNano = System.nanoTime();
       _queueSize.update(_delegate.size(), currentNano);
-      _dequeueRate.record(1, currentNano);
     }
     return r;
   }
@@ -141,10 +175,9 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
 
   public boolean remove(Object o) {
     boolean r = _delegate.remove(o);
-    if (r) {
+    if (_monitorSize && r) {
       long currentNano = System.nanoTime();
       _queueSize.update(_delegate.size(), currentNano);
-      _dequeueRate.record(1, currentNano);
     }
     return r;
   }
@@ -155,20 +188,18 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
 
   public int drainTo(Collection<? super T> c) {
     int r = _delegate.drainTo(c);
-    if (r > 0) {
+    if (_monitorSize && r > 0) {
       long currentNano = System.nanoTime();
       _queueSize.update(_delegate.size(), currentNano);
-      _dequeueRate.record(r, currentNano);
     }
     return r;
   }
 
   public int drainTo(Collection<? super T> c, int maxElements) {
     int r = _delegate.drainTo(c, maxElements);
-    if (r > 0) {
+    if (_monitorSize && r > 0) {
       long currentNano = System.nanoTime();
       _queueSize.update(_delegate.size(), currentNano);
-      _dequeueRate.record(r, currentNano);
     }
     return r;
   }
@@ -195,13 +226,12 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
   public boolean removeAll(Collection<?> c) {
     int beforeSize = _delegate.size();
     boolean r = _delegate.removeAll(c);
-    if (r) {
-      long currentNano = System.nanoTime();
+    if (_monitorSize && r) {
       int size = _delegate.size();
       int delta = beforeSize - size;
       if (delta > 0) {
+        long currentNano = System.nanoTime();
         _queueSize.update(size, currentNano);
-        _dequeueRate.record(delta, currentNano);
       }
     }
     return r;
@@ -210,13 +240,12 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
   public boolean removeIf(Predicate<? super T> filter) {
     int beforeSize = _delegate.size();
     boolean r = _delegate.removeIf(filter);
-    if (r) {
-      long currentNano = System.nanoTime();
+    if (_monitorSize && r) {
       int size = _delegate.size();
       int delta = beforeSize - size;
       if (delta > 0) {
+        long currentNano = System.nanoTime();
         _queueSize.update(size, currentNano);
-        _dequeueRate.record(delta, currentNano);
       }
     }
     return r;
@@ -225,24 +254,23 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
   public boolean retainAll(Collection<?> c) {
     int beforeSize = _delegate.size();
     boolean r = _delegate.retainAll(c);
-    if (r) {
-      long currentNano = System.nanoTime();
+    if (_monitorSize && r) {
       int size = _delegate.size();
       int delta = beforeSize - size;
       if (delta > 0) {
+        long currentNano = System.nanoTime();
         _queueSize.update(size, currentNano);
-        _dequeueRate.record(delta, currentNano);
       }
     }
     return r;
   }
 
   public void clear() {
-    int beforeSize = _delegate.size();
     _delegate.clear();
-    long currentNano = System.nanoTime();
-    _queueSize.update(0, currentNano);
-    _dequeueRate.record(beforeSize, currentNano);
+    if (_monitorSize) {
+      long currentNano = System.nanoTime();
+      _queueSize.update(0, currentNano);
+    }
   }
 
   public boolean equals(Object o) {
@@ -284,10 +312,6 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
 
   public Harvestable enqueueRate() {
     return _enqueueRate;
-  }
-
-  public Harvestable dequeueRate() {
-    return _dequeueRate;
   }
 
 }

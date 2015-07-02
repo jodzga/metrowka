@@ -24,13 +24,13 @@ public class Rate extends Harvestable {
       long last = 0;
       do {
         last = _lastNano.get();
-      } while ((last == 0 || last < currentNano) && (!_lastNano.compareAndSet(last, currentNano)));
+      } while ((last == 0 || (currentNano - last) > 0) && (!_lastNano.compareAndSet(last, currentNano)));
       if (last != 0) {
-        if (last < currentNano) {
+        if ((currentNano - last) > 0) {
           long delta = currentNano - last;
           _recorder.recordValueWithCount(scale(count, delta), delta);
         } else {
-          //if there is a time measurement error e.g. last >= current
+          //if there is a time measurement jitter e.g. last >= current
           //we attribute event to one ns time period
           _recorder.recordValueWithCount(count * MAX_INTERVAL_BETWEEN_EVENTS_IN_NS, 1);
         }

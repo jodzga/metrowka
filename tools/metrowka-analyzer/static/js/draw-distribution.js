@@ -62,7 +62,7 @@
       $("#max0").text(data.max);
       $("#avg0").text(data.avg);
       $("#stdDev0").text(data.stdDeviation);
-      $("#title0").text("Amount of time per value");
+      $("#title0").text("Amount of time per value (histogram-like)");
   }
 
   function drawIntervalDistribution(data) {
@@ -128,7 +128,7 @@
       $("#max0").text(getDuration(data.max));
       $("#avg0").text(getDuration(data.avg));
       $("#stdDev0").text(getDuration(data.stdDeviation));
-      $("#title0").text("Count per latency");
+      $("#title0").text("Count per latency (bar-like)");
   }
 
   function drawRateDistribution(data) {
@@ -204,7 +204,7 @@
     $("#max0").text(round2(normalizeRate(data.max)) + "/s");
     $("#avg0").text(round2(normalizeRate(data.avg)) + "/s");
     $("#stdDev0").text(round2(normalizeRate(data.stdDeviation)) + "/s");
-    $("#title0").text("Amount of time per rate");
+    $("#title0").text("Amount of time per rate (bar-like)");
   }
   
   function drawDistribution(name, start, type) {

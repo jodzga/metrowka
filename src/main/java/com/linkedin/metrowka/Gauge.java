@@ -21,8 +21,8 @@ public class Gauge extends Harvestable {
     final Measurement current = new Measurement(value, currentNano);
     do {
       last = _lastMeasurment.get();
-    } while ((last == null || last.getTimestamp() < currentNano) && (!_lastMeasurment.compareAndSet(last, current)));
-    if (last != null && last.getTimestamp() < currentNano) {
+    } while ((last == null || (currentNano - last.getTimestamp()) > 0 ) && (!_lastMeasurment.compareAndSet(last, current)));
+    if (last != null && (currentNano - last.getTimestamp()) > 0) {
       _recorder.recordValueWithCount(last.getValue(), currentNano - last.getTimestamp());
     }
   }
