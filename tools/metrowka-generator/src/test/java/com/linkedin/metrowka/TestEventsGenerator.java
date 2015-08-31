@@ -8,9 +8,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.LoggerFactory;
 
+import com.linkedin.metrowka.generator.EventsArrival;
+import com.linkedin.metrowka.generator.EventsGenerator;
+import com.linkedin.metrowka.generator.PoissonEventsArrival;
 import com.linkedin.metrowka.logging.LogEventHistogramSerializer;
 import com.linkedin.metrowka.logging.LoggingReaper;
-import com.linkedin.metrowka.metrics.Hiccup;
+import com.linkedin.metrowka.metrics.vm.Hiccup;
 
 public class TestEventsGenerator {
 

@@ -14,8 +14,9 @@ public class Rate extends Harvestable {
    // Specifies smallest registered rate, equivalent to 1/2^48ns that is 1/3.4day.
   public static final long MAX_INTERVAL_BETWEEN_EVENTS_IN_NS = 1L << 48;
 
-  public Rate(final String name, final long lowestDiscernibleValue, final long highestTrackableValue, final int numberOfSignificantValueDigits) {
-    super(InstrumentType.rate, name);
+  public Rate(final String name, final long lowestDiscernibleValue, final long highestTrackableValue, final int numberOfSignificantValueDigits,
+      final MeasureUnit unit) {
+    super(InstrumentType.rate, unit, name);
     _recorder = new Recorder(lowestDiscernibleValue, highestTrackableValue, numberOfSignificantValueDigits);
   }
 

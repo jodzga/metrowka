@@ -1,4 +1,4 @@
-package com.linkedin.metrowka;
+package com.linkedin.metrowka.generator;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.linkedin.metrowka.generator.EventsArrival;
+import com.linkedin.metrowka.Metrowka;
 
 public class EventsGenerator {
 

@@ -1,4 +1,4 @@
-package com.linkedin.metrowka.metrics;
+package com.linkedin.metrowka.metrics.vm;
 
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +43,7 @@ public class Hiccup extends Interval {
         }
       } catch (InterruptedException e) {
         _logger.info("hiccup interrupted, terminating...");
+        Thread.currentThread().interrupt();
       }
     } , "hiccup").start();
   }

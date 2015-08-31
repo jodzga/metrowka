@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.testng.annotations.Test;
 
+import com.linkedin.metrowka.generator.UniformEventsArrival;
+
 public class TestUniformEventsArrival {
 
   @Test

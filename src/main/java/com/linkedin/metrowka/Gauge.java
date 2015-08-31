@@ -12,7 +12,7 @@ public class Gauge extends Harvestable {
   private Histogram _recycle;
 
   public Gauge(final String name, final long lowestDiscernibleValue, final long highestTrackableValue, final int numberOfSignificantValueDigits) {
-    super(InstrumentType.gauge, name);
+    super(InstrumentType.gauge, MeasureUnit.other, name);
     _recorder = new Recorder(lowestDiscernibleValue, highestTrackableValue, numberOfSignificantValueDigits);
   }
 

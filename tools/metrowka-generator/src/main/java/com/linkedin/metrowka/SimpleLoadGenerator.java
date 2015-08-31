@@ -10,9 +10,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.linkedin.metrowka.generator.EventsArrival;
+import com.linkedin.metrowka.generator.EventsGenerator;
+import com.linkedin.metrowka.generator.PoissonEventsArrival;
 import com.linkedin.metrowka.logging.LogEventHistogramSerializer;
 import com.linkedin.metrowka.logging.LoggingReaper;
-import com.linkedin.metrowka.metrics.Hiccup;
+import com.linkedin.metrowka.metrics.vm.Hiccup;
 import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
@@ -49,7 +52,7 @@ public class SimpleLoadGenerator {
     final Interval latency = new Interval("latency", 1, TimeUnit.MINUTES.toNanos(1), 3);
 
     final BlockingQueue<Long> queue = new LinkedBlockingDeque<Long>(100000);
-    final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
 
     EventsGenerator generator = new EventsGenerator(arrivalDistribution, queue, executor,
         event -> {

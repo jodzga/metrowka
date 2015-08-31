@@ -1,9 +1,7 @@
-package com.linkedin.metrowka;
+package com.linkedin.metrowka.generator;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-
-import com.linkedin.metrowka.generator.EventsArrival;
 
 public class PoissonEventsArrival implements EventsArrival {
 

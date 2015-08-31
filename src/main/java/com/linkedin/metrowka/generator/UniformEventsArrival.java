@@ -1,8 +1,6 @@
-package com.linkedin.metrowka;
+package com.linkedin.metrowka.generator;
 
 import java.util.concurrent.TimeUnit;
-
-import com.linkedin.metrowka.generator.EventsArrival;
 
 public class UniformEventsArrival implements EventsArrival {
   private final double _nanosToNextEvent;

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import com.linkedin.metrowka.logging.LogEventHistogramSerializer;
 import com.linkedin.metrowka.logging.LoggingReaper;
-import com.linkedin.metrowka.metrics.Hiccup;
+import com.linkedin.metrowka.metrics.vm.Hiccup;
 
 public class HiccupMeter {
 

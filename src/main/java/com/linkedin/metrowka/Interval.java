@@ -9,7 +9,7 @@ public class Interval extends Harvestable {
   private Histogram _recycle;
 
   public Interval(final String name, final long lowestDiscernibleValue, final long highestTrackableValue, final int numberOfSignificantValueDigits) {
-    super(InstrumentType.interval, name);
+    super(InstrumentType.interval, MeasureUnit.time, name);
     _recorder = new Recorder(lowestDiscernibleValue, highestTrackableValue, numberOfSignificantValueDigits);
   }
 

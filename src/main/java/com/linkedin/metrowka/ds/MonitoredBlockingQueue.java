@@ -13,6 +13,7 @@ import com.linkedin.metrowka.Gauge;
 import com.linkedin.metrowka.Harvestable;
 import com.linkedin.metrowka.Harvester;
 import com.linkedin.metrowka.InstrumentType;
+import com.linkedin.metrowka.MeasureUnit;
 import com.linkedin.metrowka.Rate;
 
 public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
@@ -39,7 +40,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
       _harvestableQueueSize = null;
     }
     if (_monitorEnqueueRate) {
-      _enqueueRate = new Rate(name + "-enqueueRate", 1, Long.MAX_VALUE, 3);
+      _enqueueRate = new Rate(name + "-enqueueRate", 1, Long.MAX_VALUE, 3, MeasureUnit.other);
     } else {
       _enqueueRate = null;
     }
@@ -296,7 +297,7 @@ public class MonitoredBlockingQueue<T> implements BlockingQueue<T> {
   private class HarvestableQueueSize extends Harvestable {
 
     HarvestableQueueSize(final String name) {
-      super(InstrumentType.gauge, name);
+      super(InstrumentType.gauge, MeasureUnit.other, name);
     }
 
     @Override

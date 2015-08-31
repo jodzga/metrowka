@@ -3,12 +3,14 @@ package com.linkedin.metrowka;
 public abstract class Harvestable {
 
   private final InstrumentType _type;
+  private final MeasureUnit _unit;
   private final String _name;
 
-  public Harvestable(InstrumentType type, String name) {
+  public Harvestable(InstrumentType type, MeasureUnit unit, String name) {
     super();
     _type = type;
     _name = name;
+    _unit = unit;
   }
 
   abstract public void harvest(Harvester consumer);
@@ -21,4 +23,7 @@ public abstract class Harvestable {
     return _name;
   }
 
+  public MeasureUnit getUnit() {
+    return _unit;
+  }
 }
