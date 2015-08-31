@@ -34,11 +34,11 @@ public abstract class BaseLoadGenerator {
   final AtomicLong _started = new AtomicLong(0);
   final AtomicLong _completed = new AtomicLong(0);
 
-  abstract void initialize();
+  public abstract void initialize();
 
-  abstract void cleanUp();
+  public abstract void cleanUp();
 
-  abstract void action(Consumer<Boolean> callback);
+  public abstract void action(Consumer<Boolean> callback);
 
   public BaseLoadGenerator(double rate, TimeUnit rateUnit, long duration, TimeUnit durationUnit) {
     _rate = rate;
