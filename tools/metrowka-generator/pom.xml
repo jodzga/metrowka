@@ -64,7 +64,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.linkedin.metrowka.SimpleLoadGenerator</mainClass>
+                            <mainClass>com.linkedin.metrowka.generator.SimpleLoadGenerator</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -1,4 +1,4 @@
-package com.linkedin.metrowka;
+package com.linkedin.metrowka.generator;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.linkedin.metrowka.generator.EventsArrival;
-import com.linkedin.metrowka.generator.EventsGenerator;
-import com.linkedin.metrowka.generator.PoissonEventsArrival;
+import com.linkedin.metrowka.Harvester;
+import com.linkedin.metrowka.Interval;
+import com.linkedin.metrowka.Metrowka;
 import com.linkedin.metrowka.logging.LogEventHistogramSerializer;
 import com.linkedin.metrowka.logging.LoggingReaper;
 import com.linkedin.metrowka.metrics.vm.Hiccup;
@@ -34,6 +34,8 @@ public class SimpleLoadGenerator {
 
     _logger.info("RPS: " + rps + ", duration: " + durationSeconds + "s, url: " + url);
 
+    final String arrivalType = args[3];
+
     final AtomicLong successes = new AtomicLong(0);
     final AtomicLong failures = new AtomicLong(0);
 
@@ -47,7 +49,7 @@ public class SimpleLoadGenerator {
     hiccups.start();
 
     final Interval eventsGeneratorJitter = new Interval("eventsGeneratorJitter", 1, TimeUnit.MINUTES.toNanos(1), 3);
-    final EventsArrival arrivalDistribution = new PoissonEventsArrival(rps, TimeUnit.SECONDS);
+    final EventsArrival arrivalDistribution = EventsArrival.fromName(arrivalType, rps, TimeUnit.SECONDS);
 
     final Interval latency = new Interval("latency", 1, TimeUnit.MINUTES.toNanos(1), 3);
 

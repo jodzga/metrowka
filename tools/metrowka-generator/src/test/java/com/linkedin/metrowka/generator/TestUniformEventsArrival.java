@@ -1,12 +1,10 @@
-package com.linkedin.metrowka;
+package com.linkedin.metrowka.generator;
 
 import static org.testng.Assert.assertEquals;
 
 import java.util.concurrent.TimeUnit;
 
 import org.testng.annotations.Test;
-
-import com.linkedin.metrowka.generator.UniformEventsArrival;
 
 public class TestUniformEventsArrival {
 

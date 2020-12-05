@@ -4,9 +4,9 @@
       $("#timeline0").empty();
       
       $.each(data.data, function(i,obj) {
-        var span = obj.hi - obj.lo;
+        var span = obj.hi - obj.lo + 1;
         obj.x = obj.lo + span / 2;
-        obj.y = (span == 0) ? obj.count : obj.count / (span + 1);
+        obj.y = obj.count / span;
       });
       
       var graph = new Rickshaw.Graph({
@@ -70,10 +70,15 @@
       $("#slider0").empty();
       $("#timeline0").empty();
 
+      var minSpan = Number.MAX_VALUE;
       $.each(data.data, function(i,obj) {
-        var span = obj.hi - obj.lo;
+        var span = obj.hi - obj.lo + 1;
+        if (span < minSpan) {
+          minSpan = span;
+        }
+        var factor = span / minSpan;
         obj.x = obj.lo + span / 2;
-        obj.y = obj.count;
+        obj.y = obj.count / factor;
       });
       
       var graph = new Rickshaw.Graph({
@@ -137,7 +142,7 @@
     $("#timeline0").empty();
 
     $.each(data.data, function(i,obj) {
-      var span = obj.hi - obj.lo;
+      var span = obj.hi - obj.lo + 1;
       obj.x = obj.lo + span / 2;
       obj.y = obj.count;
     });

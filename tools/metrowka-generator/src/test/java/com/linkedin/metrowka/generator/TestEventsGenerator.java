@@ -1,4 +1,4 @@
-package com.linkedin.metrowka;
+package com.linkedin.metrowka.generator;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
@@ -8,9 +8,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.LoggerFactory;
 
-import com.linkedin.metrowka.generator.EventsArrival;
-import com.linkedin.metrowka.generator.EventsGenerator;
-import com.linkedin.metrowka.generator.PoissonEventsArrival;
+import com.linkedin.metrowka.Harvester;
+import com.linkedin.metrowka.Interval;
+import com.linkedin.metrowka.Metrowka;
 import com.linkedin.metrowka.logging.LogEventHistogramSerializer;
 import com.linkedin.metrowka.logging.LoggingReaper;
 import com.linkedin.metrowka.metrics.vm.Hiccup;
