@@ -24,6 +24,7 @@ import com.ning.http.client.Response;
 public class SimpleLoadGenerator {
 
   private static final Logger _logger = LoggerFactory.getLogger(SimpleLoadGenerator.class);
+  private static final long INITIAL_DELAY_SECONDS = 5;
 
   public static void main(String[] args) throws Exception {
 
@@ -32,7 +33,7 @@ public class SimpleLoadGenerator {
     final String url = args[2];
         //"http://localhost:7479/restli-perf-pegasus-server/asyncLongKey/0?delay=0&fixture=small";
 
-    _logger.info("RPS: " + rps + ", duration: " + durationSeconds + "s, url: " + url);
+    _logger.info("RPS: " + rps + ", duration: " + durationSeconds + "s (after " + INITIAL_DELAY_SECONDS + "s of initial delay), url: " + url);
 
     final String arrivalType = args[3];
 
@@ -83,14 +84,14 @@ public class SimpleLoadGenerator {
           client.prepareGet(url).execute(responseHandler);
         });
 
-    generator.start(5, TimeUnit.SECONDS);
+    generator.start(INITIAL_DELAY_SECONDS, TimeUnit.SECONDS);
 
     metrowka.register(hiccups, loggingReaper);
     metrowka.register(eventsGeneratorJitter, loggingReaper);
     metrowka.register(latency, loggingReaper);
     metrowka.start();
 
-    TimeUnit.SECONDS.sleep(durationSeconds);
+    TimeUnit.SECONDS.sleep(durationSeconds + INITIAL_DELAY_SECONDS);
 
     _logger.info("Finished, successful: " + successes.get() + ", failed: " + failures.get());
 

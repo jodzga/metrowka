@@ -36,7 +36,7 @@ public class EventsGenerator {
 
   public void start(long initialDelay, TimeUnit tu) {
 
-    _logger.info("starting event generator");
+    _logger.info("starting event generator with initial delay of " + initialDelay + " " + tu.toString());
 
     _executor.execute(() -> {
       try {
