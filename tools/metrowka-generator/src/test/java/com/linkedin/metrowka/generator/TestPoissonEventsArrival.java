@@ -25,6 +25,8 @@ public class TestPoissonEventsArrival {
       variance += (nanos - MEAN_INTERARRIVAL_NANO) * (nanos - MEAN_INTERARRIVAL_NANO);
       values[i] = nanos;
     }
+    System.out.println(sum/ITERATIONS);
+    System.out.println(MEAN_INTERARRIVAL_NANO);
     variance = variance / ITERATIONS;
     System.out.println("variance: " + variance + ", model variance: " + VARIANCE_NANO + ", diff: " + Math.abs(VARIANCE_NANO - variance));
     double distanceFromMean = Math.abs((sum / ITERATIONS) - (MEAN_INTERARRIVAL_NANO));

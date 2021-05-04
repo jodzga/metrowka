@@ -1,5 +1,7 @@
 package com.linkedin.metrowka.generator;
 
+import static org.asynchttpclient.Dsl.config;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -7,6 +9,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.asynchttpclient.AsyncCompletionHandler;
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,10 +21,8 @@ import com.linkedin.metrowka.Metrowka;
 import com.linkedin.metrowka.logging.LogEventHistogramSerializer;
 import com.linkedin.metrowka.logging.LoggingReaper;
 import com.linkedin.metrowka.metrics.vm.Hiccup;
-import com.ning.http.client.AsyncCompletionHandler;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.AsyncHttpClientConfig;
-import com.ning.http.client.Response;
+
+import static org.asynchttpclient.Dsl.*;
 
 public class SimpleLoadGenerator {
 
@@ -40,8 +43,7 @@ public class SimpleLoadGenerator {
     final AtomicLong successes = new AtomicLong(0);
     final AtomicLong failures = new AtomicLong(0);
 
-    final AsyncHttpClientConfig.Builder cfgBuilder = new AsyncHttpClientConfig.Builder();
-    final AsyncHttpClient client = new AsyncHttpClient(cfgBuilder.build());
+    final AsyncHttpClient client = asyncHttpClient(config());
 
     final Metrowka metrowka = new Metrowka(60*1000);
     final Harvester loggingReaper = new LoggingReaper(LoggerFactory.getLogger("metrowka"), new LogEventHistogramSerializer());

@@ -7,10 +7,10 @@ public class AnalyzerMain {
 
   public static void main(String[] args) throws Exception {
     if (args.length < 3 || args.length > 4) {
-      System.out.println("Incorrect arguments, expecting: BASE_LOCATION LOG_FILE_LOCATION LOG_FILE_PATTERN_LAYOUT <PORT>\n"
+      System.out.println("Incorrect arguments, expecting: BASE_LOCATION LOG_FILE_LOCATION LOG_PATTERN_LAYOUT <PORT>\n"
           + "  BASE_LOCATION           - location of Analyzer\n"
           + "  LOG_FILE_LOCATION       - location of the log file\n"
-          + "  LOG_FILE_PATTERN_LAYOUT - patter layout used in a log file\n"
+          + "  LOG_PATTERN_LAYOUT      - patter layout used in a log file, typically part of the log configuration e.g. \"%d{yyyy-MM-dd HH:mm:ss} %p %c - %m%n\"\n"
           + "  <PORT>                  - optional port number, default is " + Constants.DEFAULT_PORT);
       System.exit(1);
     }
