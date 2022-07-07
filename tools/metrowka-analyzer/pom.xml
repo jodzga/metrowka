@@ -5,7 +5,7 @@
   <version>0.0.1-SNAPSHOT</version>
 
   <properties>
-    <jettyVersion>9.4.35.v20201120</jettyVersion>
+    <jettyVersion>10.0.10</jettyVersion>
   </properties>
 
     <dependencies>
